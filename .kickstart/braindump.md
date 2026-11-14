@@ -26,3 +26,15 @@
 - Scope: comprehensive reorganization and aesthetic/functional refresh, no demolition. Keep the avocado tree, brick walls, terrace and flagstone path. Clear the central lawn, add shelving along the walls, create a tidy display area for bonsai and orchids, low edging around the tree base, play area for grandkids.
 - The user mentions videos and photos already reviewed ("a través de tus videos y fotografías"). The text appears to be a summary prepared earlier, possibly with another AI.
 - Still open: deliverable at end of weekend, photos/videos access, grandkids' number and ages, money budget, Gemini API key, orientation, measurements.
+
+### Round 2 — first photo + answers (2026-11-14)
+- Photo 1 (panorama, lawn and perimeter wall) received in chat. Observations:
+  - Left: terrace corner with arched window grille, potted dracaena/ferns/jade/palms, bare gray block wall with white lattice panel, string lights, a ladder stored in the open.
+  - L-shaped lawn in good condition. Garden hose and a plastic stool lying on the lawn (tripping hazards).
+  - Brick wall with concrete pilasters at regular spacing and a concrete cap. Above it, a hedge/climber strip and chain-link fence.
+  - Beyond the fence: strong borrowed view of mountains and the city.
+  - Perimeter bed about 1 m deep, edged with angled bricks; mostly bare soil with sparse roses and shrubs, a few terracotta pots, ferns and concrete ornaments in the right corner.
+- Grandkids: 3. Message garbled ("una de 5 y otros 2 de uno"); likely one girl aged 5 and two aged about 1. CONFIRM.
+- Money budget: unknown. Plan should offer tiers.
+- Gemini API key: user can get one, asked how.
+- Deliverable: agreed. Written plan per zone with plant/shopping list, 3-4 before/after images per zone with style options, reusable tools.
