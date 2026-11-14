@@ -9,3 +9,5 @@
 | 2026-11-14 | Garden photos are committed to the repo (`inputs/fotos/`). | User asked to store them in the repo. |
 | 2026-11-14 | Client-facing outputs in Spanish. | Clients are the user's parents in El Salvador. |
 | 2026-11-14 | Budget presented in three tiers (básico / medio / completo). | Money budget unknown. |
+| 2026-11-14 | Project docs and client outputs in Spanish; code and image prompts in English. | User switched to Spanish; image models follow English prompts better. |
+| 2026-11-14 | Mask method left OPEN: try SAM 3 (local) or Gemini segmentation, fall back to a hand-painted mask. | No method tested yet. |

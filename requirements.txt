@@ -1,0 +1,8 @@
+python-dotenv
+Pillow
+numpy
+markdown
+# Se agregan al implementar cada herramienta:
+# google-genai      -> render_redesign.py
+# transformers torch -> make_keep_mask.py (método sam3)
+# openai            -> render_redesign.py --provider openai (respaldo)
