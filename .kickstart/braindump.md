@@ -38,3 +38,21 @@
 - Money budget: unknown. Plan should offer tiers.
 - Gemini API key: user can get one, asked how.
 - Deliverable: agreed. Written plan per zone with plant/shopping list, 3-4 before/after images per zone with style options, reusable tools.
+
+### Round 3 — five more photos (2026-11-14)
+User sent photos 2-6 and asked to store photos in the repo (answers the privacy question: commit them). Saved in `inputs/fotos/`. Chat copies are downscaled to max 2000 px.
+- 02/03 terrace from the BBQ end:
+  - Two Weber grills against the bare block wall; empty metal brackets on the wall above (old awning or pergola frame).
+  - Long tiled terrace under the eave. Folding table with 6 white chairs and potted plants along the lawn edge, blocking flow.
+  - Wooden glider bench at the far end; wrought-iron gate/grille with hanging orchids; medicine ball and kettlebell on the floor; hose across the tiles.
+  - Narrow bare-soil bed between the block wall and the lawn.
+- 04 avocado tree: mature, large, with a huge strap-leaf epiphyte clump (orchids/bromeliads) on the trunk. White wrought-iron table and chairs fully covered in pots; orchids mounted on the brick wall corner; string lights crossing.
+- 05 avocado corner panorama:
+  - Weedy flagstone path; white iron furniture used as plant stands.
+  - Potting table and pots under the eave of a small side building; downspout; black plastic sheeting.
+  - Glider bench on the tile; mountain view (cerro) at left; barbed wire on the brick wall at right.
+- 06 lawn looking toward the tall gray block wall with white lattice:
+  - Rusty stepped metal stand along the lawn's terrace side holding bonsai, including desert roses (Adenium, toxic sap) and jade.
+  - Roses along the brick wall on the right.
+- Safety note: Adenium (desert rose) sap is toxic; peace lily (Spathiphyllum) is mildly toxic. Relevant with two ~1-year-olds.
+- Layout reading: terrace runs along the house; rectangular lawn; tall block wall at the BBQ end; long brick wall (with the view) opposite the house; avocado corner at the far end by a small side building's eave.
