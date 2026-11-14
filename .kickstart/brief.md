@@ -1,5 +1,5 @@
 # Project Brief: Garden Design (Jardín de mis papás)
-*Status:* Draft · *Updated:* 2026-11-14 · *Owner:* el usuario (hijo), para sus papás
+*Status:* Approved (con correcciones) · *Updated:* 2026-11-14 · *Owner:* el usuario (hijo), para sus papás
 Marcadores: `ASSUMPTION:` = suposición por confirmar · `OPEN:` = pendiente.
 
 ## 1. Resumen
@@ -7,7 +7,7 @@ Marcadores: `ASSUMPTION:` = suposición por confirmar · `OPEN:` = pendiente.
 - **Para quién / quién lo usa:**
   - Clientes: los papás.
   - Operador: el usuario, con Claude.
-  - Usuarios del jardín: los papás y 3 nietos (una niña de 5 años y dos de ~1 año; `OPEN:` confirmar edades).
+  - Usuarios del jardín: los papás y 3 nietos (5, 5 y 2 años).
 - **Tipo de proyecto:** producción de contenido (plan de diseño + imágenes antes/después), con investigación previa ya hecha (`reports/Garden design and AI image models.md`).
 - **Éxito se ve así:**
   - Al final del fin de semana hay un plan por zona, con lista de plantas y de compras en 3 niveles de presupuesto.
@@ -117,10 +117,10 @@ armar_plan_final:
 - **Nunca:**
   - alterar la casa, los muros, el aguacate, la terraza o el camino de laja en el render final (el composite lo garantiza);
   - recomendar plantas que no sirvan en el clima de San Salvador;
-  - poner plantas tóxicas o con espinas al alcance de los niños de 1 año;
+  - poner plantas tóxicas o con espinas al alcance de los niños (sobre todo el de 2 años);
   - escribir la API key en archivos o en el chat.
 - **Seguridad de los usuarios:**
-  - Nietos de 1 y 5 años: zona de juego sin bordes duros, sin rosales ni espinas cerca, sin plantas tóxicas a su altura. La rosa del desierto (Adenium) tiene savia tóxica; la cuna de Moisés (Spathiphyllum) es levemente tóxica.
+  - Nietos de 5, 5 y 2 años: espacio abierto para correr y jugar con pelota; zona de juego sin bordes duros, sin rosales ni espinas cerca, sin plantas tóxicas a su altura. La rosa del desierto (Adenium) tiene savia tóxica; la cuna de Moisés (Spathiphyllum) es levemente tóxica.
   - Papás de 70: caminos firmes y sin obstáculos, sin bordillos de ladrillo inclinado, asientos con sombra cada pocos metros, mesas de trabajo a 70–90 cm, manguera en carrete.
 - **Peor caso:** imágenes bonitas pero irreales o que "cambian la casa", y los papás pierden confianza. Mitigación: composite + QA visual + plan con plantas y medidas reales.
 - **Datos:** fotos de la casa en un repo de GitHub, por decisión del usuario. `ASSUMPTION:` el repo es privado.
@@ -150,7 +150,6 @@ armar_plan_final:
 - Más adelante, si funciona: convertirlo en un servicio para otras personas (formulario de fotos, entrevista guiada, entrega automática).
 
 ## 12. Suposiciones y pendientes
-- `OPEN:` edades exactas de los nietos (entendido: 5, ~1 y ~1).
 - `OPEN:` medidas del patio (mientras tanto, estimar por las baldosas de la terraza).
 - `OPEN:` presupuesto en dinero; se usarán 3 niveles.
 - `OPEN:` API key de Gemini con facturación activa.

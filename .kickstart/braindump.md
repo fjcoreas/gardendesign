@@ -56,3 +56,8 @@ User sent photos 2-6 and asked to store photos in the repo (answers the privacy 
   - Roses along the brick wall on the right.
 - Safety note: Adenium (desert rose) sap is toxic; peace lily (Spathiphyllum) is mildly toxic. Relevant with two ~1-year-olds.
 - Layout reading: terrace runs along the house; rectangular lawn; tall block wall at the BBQ end; long brick wall (with the view) opposite the house; avocado corner at the far end by a small side building's eave.
+
+### Round 4 — corrections (2026-11-14)
+- Grandkids: 5, 5 and 2 years old.
+- Measurements and other details will come later.
+- Brief treated as approved with these corrections.
