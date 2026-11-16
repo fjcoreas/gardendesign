@@ -85,4 +85,5 @@ Para **una zona**:
 - `OPEN:` ID exacto del modelo de imagen vigente; confirmarlo en AI Studio y ponerlo en `GEMINI_IMAGE_MODEL`.
 
 ## Registro de aprendizajes
-- (vacío)
+- 2026-11-16: Gemini acepta solo estas proporciones: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9 y 21:9. Las panorámicas (p. ej. la 01, 3.3:1) quedan 29% fuera y el render saldría estirado: recortarlas a 21:9 o 16:9 antes de renderizar. La foto 06 es exactamente 3:4, ideal para la primera prueba.
+- 2026-11-16: la clave llega por el proxy (Network secret, header `x-goog-api-key`); el script manda un valor de relleno y el proxy lo reemplaza.
