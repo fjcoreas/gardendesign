@@ -8,5 +8,10 @@
     "before": "../cesped/06_original.jpg",
     "after": "../cesped/06_concepto_A_v2.jpg",
     "label": "Césped visto hacia el muro de block (foto 06): concepto A."
+  },
+  {
+    "before": "../aguacate/05_rincon_aguacate_panoramica__original.jpg",
+    "after": "../aguacate/05_rincon_aguacate_panoramica__05_aguacate_C_v1.png",
+    "label": "Rincón del aguacate (foto 05): saloncito de orquídeas (C) con el césped (A)."
   }
 ]

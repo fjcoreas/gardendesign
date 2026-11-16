@@ -109,3 +109,7 @@ Para **una zona**:
 - 2026-11-16 (vista integrada, foto 02):
   - Con el render aprobado del césped como **imagen de referencia**, el corrimiento fue de **14.7%**: la cámara se alejó y la casa cambió de escala. Sin referencia, describiendo el césped solo con texto (la ficha canónica), fue de **0.2%** y la integración salió bien.
   - **Regla:** para la consistencia entre zonas o fotos, usa primero las fichas canónicas en texto. Usa una referencia de imagen solo si el texto no basta, y mide el corrimiento.
+- 2026-11-16 (rincón del aguacate, foto 05, concepto C, integrado con el césped A):
+  - Corrimiento de 0.5%. El render **recortó parte de la copa del aguacate** y quitó la vegetación sobre el muro izquierdo. Se compusieron de vuelta la copa, el techo y el cielo de la derecha.
+  - Una primera máscara que incluía "trees and hedge beyond the fence" y "mountain" trajo **fantasmas**: partes altas de plantas viejas del arriate que asomaban sobre el muro quedaron flotando. **Regla: compón solo regiones que el diseño no toca y que no se mezclan con plantas del área editada** (copa, techo, cielo abierto).
+  - Pendiente de consistencia: el seto del arriate salió naranja (no limonaria), y apareció una franja de concreto cruzando el césped hacia el saloncito.
