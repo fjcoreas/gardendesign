@@ -38,18 +38,21 @@ def color_match_lab(render: Image.Image, original: Image.Image, keep: np.ndarray
     """Shift the render's LAB mean/std to the original's, using only KEEP pixels as the reference.
 
     Both images show the same fixed elements there, so any difference is model colour drift
-    (e.g. the pink cast reported for Gemini at 2K/4K)."""
+    (e.g. the pink cast reported for Gemini at 2K/4K). Uses OpenCV's float LAB (L 0-100, a/b signed);
+    PIL's 8-bit LAB wraps the signed a/b channels and produced garish colours."""
+    import cv2
     sel = keep > 0.5
     if sel.sum() < 1000:  # too little shared area to measure drift reliably
         return render
-    r = np.asarray(render.convert("LAB"), dtype=np.float32)
-    o = np.asarray(original.convert("LAB"), dtype=np.float32)
+    r = cv2.cvtColor(np.asarray(render, dtype=np.float32) / 255.0, cv2.COLOR_RGB2LAB)
+    o = cv2.cvtColor(np.asarray(original, dtype=np.float32) / 255.0, cv2.COLOR_RGB2LAB)
     out = r.copy()
     for c in range(3):
         rm, rs = r[..., c][sel].mean(), r[..., c][sel].std() + 1e-6
         om, os_ = o[..., c][sel].mean(), o[..., c][sel].std() + 1e-6
         out[..., c] = (r[..., c] - rm) * (os_ / rs) + om
-    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "LAB").convert("RGB")
+    rgb = cv2.cvtColor(out, cv2.COLOR_LAB2RGB)
+    return Image.fromarray(np.clip(rgb * 255.0, 0, 255).astype(np.uint8), "RGB")
 
 
 def build_alpha(mask_path, size, erode: int, feather: int) -> np.ndarray:

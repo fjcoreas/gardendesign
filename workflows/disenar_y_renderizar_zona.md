@@ -87,3 +87,10 @@ Para **una zona**:
 ## Registro de aprendizajes
 - 2026-11-16: Gemini acepta solo estas proporciones: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9 y 21:9. Las panorámicas (p. ej. la 01, 3.3:1) quedan 29% fuera y el render saldría estirado: recortarlas a 21:9 o 16:9 antes de renderizar. La foto 06 es exactamente 3:4, ideal para la primera prueba.
 - 2026-11-16: la clave llega por el proxy (Network secret, header `x-goog-api-key`); el script manda un valor de relleno y el proxy lo reemplaza.
+- 2026-11-16 (primer slice, foto 06, concepto A):
+  - **v1** (prompt con el diseño primero) alejó la cámara, inventó una ventana en arco, cerró el césped con un seto en primer plano y quitó las guirnaldas. **v2** (prompt que empieza con "Edit this exact photo without moving the camera…", el contorno del césped explícito y "nothing added in the foreground") salió bien: diseño correcto y luces respetadas, aunque con un corrimiento de cámara de ~9% (escala 0.91, desplazamiento ~36 px). **Regla: el bloqueo de encuadre va primero en el prompt.**
+  - **Segmentación:** con 13 etiquetas en `gemini-3.8-flash` la petición tardó más de 5 min y el proxy la cortó (502). Con 4 etiquetas en `gemini-3.5-flash-lite` tardó 2 s, pero devolvió cajas en lugar de siluetas, demasiado burdas. `gemini-2.5-flash` ya no está disponible.
+  - **Composite:** con un corrimiento de cámara de ~9%, pegar los píxeles originales produce dobles bordes (celosía y luces duplicadas, una flor flotante), así que en esa vista se entregó el render sin composición. Antes de componer, medir el corrimiento; si pasa de ~2%, no componer o alinear primero. La alineación con transformación de similitud deja bordes vacíos abajo, así que falta resolverlo.
+  - El ajuste de color con LAB de PIL saturaba los colores (los canales a/b se desbordan); se corrigió usando LAB de OpenCV.
+  - Costo de la prueba: 2 renders a 2K más 3 llamadas de segmentación, unos $0.10–0.15.
+

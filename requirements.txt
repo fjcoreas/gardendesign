@@ -2,6 +2,7 @@ python-dotenv
 Pillow
 numpy
 markdown
+opencv-python-headless   # colour matching in composite_keep_regions.py
 # Se agregan al implementar cada herramienta:
 # google-genai      -> render_redesign.py
 # transformers torch -> make_keep_mask.py (método sam3)
