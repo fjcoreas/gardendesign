@@ -106,3 +106,6 @@ Para **una zona**:
   - Con la plantilla v2 el corrimiento fue de solo **0.1%** en los dos intentos: el prompt que bloquea el encuadre funciona mejor cuando lo que se edita son objetos sobre el piso y no el terreno.
   - v1 puso el rincón de los nietos en el paso junto a la casa, quitó plantas del borde del césped y dejó la vela de sombra sin anclaje. v2 lo corrigió con instrucciones explícitas: "on the lawn side of that seating group", "clear walkway about 1.2 m… with nothing in it", "all other potted plants stay" y el poste de la vela.
   - Se compuso **solo la casa y el alero** (máscara de 2 etiquetas): sin costuras. Lección: compón solo lo que el diseño no toca.
+- 2026-11-16 (vista integrada, foto 02):
+  - Con el render aprobado del césped como **imagen de referencia**, el corrimiento fue de **14.7%**: la cámara se alejó y la casa cambió de escala. Sin referencia, describiendo el césped solo con texto (la ficha canónica), fue de **0.2%** y la integración salió bien.
+  - **Regla:** para la consistencia entre zonas o fotos, usa primero las fichas canónicas en texto. Usa una referencia de imagen solo si el texto no basta, y mide el corrimiento.
