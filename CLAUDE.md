@@ -57,7 +57,7 @@ Contexto completo: `.kickstart/brief.md`. Reglas de diseño y elección de model
 ## Sistemas y credenciales
 | Sistema | Uso | Clave(s) en `.env` |
 |---|---|---|
-| Gemini API (modelo de imagen) | Renderizar y, opcionalmente, segmentar | `GEMINI_API_KEY`, `GEMINI_IMAGE_MODEL` |
+| Gemini API (modelo de imagen) | Renderizar y, opcionalmente, segmentar | `GEMINI_API_KEY` (en la nube: Network secret del entorno, header `x-goog-api-key`), `GEMINI_IMAGE_MODEL=gemini-nano-banana-2.1` |
 | OpenAI Images (respaldo, edición con máscara) | Solo si Gemini falla | `OPENAI_API_KEY` |
 
 Los secretos viven solo en `.env` o en los secretos del entorno. Nunca los escribas, imprimas ni subas a git, y nunca le pidas al usuario que pegue una clave en el chat.

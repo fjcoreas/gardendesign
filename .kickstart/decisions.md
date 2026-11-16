@@ -11,3 +11,5 @@
 | 2026-11-14 | Budget presented in three tiers (básico / medio / completo). | Money budget unknown. |
 | 2026-11-14 | Project docs and client outputs in Spanish; code and image prompts in English. | User switched to Spanish; image models follow English prompts better. |
 | 2026-11-14 | Mask method left OPEN: try SAM 3 (local) or Gemini segmentation, fall back to a hand-painted mask. | No method tested yet. |
+| 2026-11-16 | Gemini key stored as an environment Network secret (host generativelanguage.googleapis.com, header x-goog-api-key). Tools send a placeholder key; the proxy injects the real one. | Key never touches files or code. `Authorization` header does not work for this API. |
+| 2026-11-16 | Model: `gemini-nano-banana-2.1`; in-Google fallback `gemini-3-pro-image`. | Both confirmed available via the API's model list. |
