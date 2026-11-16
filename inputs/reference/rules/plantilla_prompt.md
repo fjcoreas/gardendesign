@@ -15,22 +15,23 @@ El prompt va **en inglés**: los modelos de imagen siguen mejor las instruccione
 - **Una variante = una llamada desde la foto original.** Haz como máximo 1–3 ajustes pequeños; si el cambio es grande, vuelve al original.
 - **Referencias:** foto original + máximo 1–3 referencias, y explica el papel de cada una.
 
-## Plantilla
+## Plantilla (v2: probada el 2026-11-16 con éxito en la foto 06)
+El **bloqueo de encuadre va primero**. La versión 1, con el diseño primero, hizo que el modelo alejara la cámara, inventara una ventana y cerrara el césped.
 ```
-Using this photo of a residential back garden in San Salvador, El Salvador, redesign only {EDITABLE_AREAS} as {STYLE_LENS}.
+Edit this exact photo without moving the camera: keep the identical framing, zoom, perspective and {ASPECT_RATIO} aspect ratio, so {FIXED_ELEMENTS_LIST} stay exactly where they are, unchanged in shape, colour and texture. {HOUSE_SENTENCE e.g. "The cream house wall and terracotta roof edge at the top left stay exactly as in the photo, with no new windows or doors."}
 
-{DESIGN_SPEC_CANONICAL}
+Change only {EDITABLE_AREAS}: {GROUND_PLAN_LOCK e.g. "the lawn keeps exactly its current outline and full width and still runs all the way to the bottom edge of the photo, with nothing added in the foreground and nothing standing on the grass"}.
 
-The following stay exactly as they are in the original photo, unchanged in shape, colour, texture and position: {FIXED_ELEMENTS_LIST}, the sky and the mountain view. Keep the identical camera position, lens, framing, perspective and {ASPECT_RATIO} aspect ratio. Match the original lighting: {LIGHTING_DESCRIPTION}, with shadows falling the same way.
+The design: {DESIGN_SPEC_CANONICAL, con cada elemento ubicado respecto a algo fijo: "at the foot of the grey block wall", "in the existing bed along the red-brick wall on the right"}. {WHAT_IS_REMOVED}.
 
-The result looks like an unretouched photograph of the same garden about two years after the redesign, with plants at realistic sizes, not a 3D render or illustration.
+Match the original {LIGHTING_DESCRIPTION}. The result looks like an unretouched smartphone photograph of the same garden about two years after the redesign, with plants at realistic sizes, not a 3D render.
 ```
 
-### Con referencia (segunda foto en adelante)
-Añade al inicio:
-```
-Image 1 is the photo to edit. Image 2 shows the approved redesign of the same garden from another angle; use the same plants, materials, colours and style, adapted to this viewpoint.
-```
+## Lecciones (foto 06)
+- **Ubica cada elemento nuevo respecto a algo fijo.** Si no, el modelo lo pone donde quiere (en v1 y en Pro, la banca acabó en la terraza).
+- **Nombra lo que debe sobrevivir y es fácil de perder:** las guirnaldas de luces desaparecieron en v1 y se conservaron en v2 al nombrarlas.
+- **Prohíbe lo que suele inventar:** "nothing added in the foreground", "no new windows or doors".
+- **Nano Banana Pro no mejoró la fidelidad:** más saturado, la banca fuera de lugar y el seto amarillento, por 2–4 veces el costo. Quedarse con 2.1.
 
 ## Ejemplo de relleno (zona césped, foto 01): borrador
 - **{EDITABLE_AREAS}:** "the lawn, the narrow planting bed along the brick wall and the loose pots and stands on the lawn"

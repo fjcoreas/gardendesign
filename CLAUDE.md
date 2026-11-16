@@ -39,10 +39,10 @@ Contexto completo: `.kickstart/brief.md`. Reglas de diseño y elección de model
 ## Índice de herramientas
 | Tool | Qué hace |
 |---|---|
-| `tools/ingest_photos.py` | Corrige rotación, pasa a sRGB, redimensiona y cataloga las fotos por zona |
-| `tools/make_keep_mask.py` | Crea la máscara de lo que NO se toca (casa, muros, árbol, cielo, terraza) |
+| `tools/ingest_photos.py` | Corrige rotación, recorta a la proporción que acepta Gemini, redimensiona y cataloga (renderiza siempre desde `.tmp/fotos/`) |
+| `tools/make_keep_mask.py` | Máscara de lo que NO se toca (polígonos de Gemini), para medir el corrimiento y componer |
 | `tools/render_redesign.py` | Llama al modelo de imagen con foto + prompt + referencias (**pagado**) |
-| `tools/composite_keep_regions.py` | Pega los píxeles originales sobre la máscara, con borde suave y ajuste de color |
+| `tools/composite_keep_regions.py` | `--measure-only` mide el corrimiento de cámara; si es ≤2%, pega los píxeles originales sobre la máscara |
 | `tools/make_before_after.py` | Arma la página HTML comparativa con deslizador |
 | `tools/build_plan_doc.py` | Convierte el plan en Markdown a HTML/PDF con imágenes |
 
@@ -85,7 +85,7 @@ Los secretos viven solo en `.env` o en los secretos del entorno. Nunca los escri
   - marcar algo como "final para los papás";
   - crear o sobrescribir un workflow.
 - **Nunca:**
-  - entregues un render donde cambió un elemento fijo (el composite lo evita; revísalo igual);
+  - entregues un render donde cambió un elemento fijo de forma visible (revisión visual obligatoria; el composite solo ayuda si el corrimiento es ≤2%);
   - propongas plantas tóxicas o con espinas al alcance de los niños; ver `inputs/reference/rules/seguridad.md`;
   - diseñes obstáculos, bordes inclinados o desniveles en los recorridos de los papás;
   - inventes medidas: si no las hay, estima a partir de las baldosas y márcalo como estimado.
@@ -102,7 +102,7 @@ Identifica qué falló → corrige la herramienta → verifica → actualiza el 
 
 ## Definición de "listo" (por zona)
 - El concepto está aprobado por el usuario.
-- Hay al menos 1 render por foto de la zona, compuesto con la máscara y revisado visualmente: ningún elemento fijo cambió, las plantas son realistas, la luz coincide y no hay costuras visibles.
+- Hay al menos 1 render por foto de la zona, revisado visualmente: ningún elemento fijo cambió de forma visible, las plantas son realistas y la luz coincide. Se midió el corrimiento; se compuso solo si fue ≤2%, y si no, se anota en la leyenda.
 - Existe `comparar.html` en `outputs/renders/<zona>/`.
 - La zona está descrita en el plan con plantas, compras y fase.
 

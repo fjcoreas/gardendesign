@@ -20,6 +20,15 @@ load_dotenv()
 TMP_DIR = Path(".tmp")
 API = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
+POLY_PROMPT = (
+    "Outline these objects in the photo as precise polygons: {items}. "
+    "Return one entry per separate object instance (for example each wall separately). "
+    "Trace each outline closely along its visible edges with 12 to 60 points; where an object is hidden "
+    "behind something in front of it, trace only its visible part. "
+    "Output a JSON list where each entry has \"label\" (use the names exactly as given) and \"polygon\": "
+    "a list of [y, x] points normalized to 0-1000."
+)
+
 SEG_PROMPT = (
     "Give the segmentation masks for these objects in the photo: {items}. "
     "Return one entry per separate object instance (for example each wall separately). "
@@ -34,23 +43,25 @@ def parse_args():
     p.add_argument("--photo", required=True)
     p.add_argument("--keep", default="", help="Comma-separated fixed elements, e.g. 'house,brick wall,sky'")
     p.add_argument("--output", default=str(TMP_DIR / "masks"))
-    p.add_argument("--method", choices=["gemini", "manual", "sam3"], default="gemini")
+    p.add_argument("--method", choices=["gemini-poly", "gemini", "manual", "sam3"], default="gemini-poly",
+                   help="gemini-poly: Gemini traces polygons (recommended); gemini: Gemini mask format (its masks "
+                        "came back invalid in Nov 2026, falls back to boxes)")
     p.add_argument("--planting-band", type=int, default=0,
                    help="Pixels removed from the bottom edge of keep regions so new planting can overlap them")
     p.add_argument("--manual-mask", help="Hand-painted mask to merge in (white = keep)")
     p.add_argument("--remove-mask", help="Hand-painted mask of areas that must be editable (white = editable)")
-    p.add_argument("--model", default=None, help="Override GEMINI_SEG_MODEL (default gemini-3.8-flash)")
+    p.add_argument("--model", default=None, help="Override GEMINI_SEG_MODEL (default gemini-3.5-flash)")
     p.add_argument("--dry-run", action="store_true", help="No API call, no writes")
     return p.parse_args()
 
 
-def call_gemini(img: Image.Image, items: list[str], model: str) -> list[dict]:
+def call_gemini(img: Image.Image, items: list[str], model: str, prompt: str = None) -> list[dict]:
     buf = io.BytesIO()
     img.save(buf, "JPEG", quality=92)
     body = {
         "contents": [{"role": "user", "parts": [
             {"inlineData": {"mimeType": "image/jpeg", "data": base64.b64encode(buf.getvalue()).decode()}},
-            {"text": SEG_PROMPT.format(items=", ".join(items))}]}],
+            {"text": (prompt or SEG_PROMPT).format(items=", ".join(items))}]}],
         "generationConfig": {"temperature": 0.3, "responseMimeType": "application/json"},
     }
     if "2.5" in model:  # Google's segmentation guide recommends no thinking on 2.5 models
@@ -95,6 +106,18 @@ def paint_segments(segments: list[dict], size: tuple[int, int]) -> np.ndarray:
     return keep
 
 
+def paint_polygons(segments: list[dict], size: tuple[int, int]) -> np.ndarray:
+    from PIL import ImageDraw
+    w, h = size
+    canvas = Image.new("L", size, 0)
+    draw = ImageDraw.Draw(canvas)
+    for s in segments:
+        pts = [(x / 1000 * w, y / 1000 * h) for y, x in s.get("polygon", []) if isinstance(y, (int, float))]
+        if len(pts) >= 3:
+            draw.polygon(pts, fill=255)
+    return np.asarray(canvas, dtype=np.uint8)
+
+
 def carve_planting_band(keep: np.ndarray, band: int) -> np.ndarray:
     """Remove `band` px from the bottom of every keep region (wall/house feet) so planting can overlap it."""
     if band <= 0:
@@ -116,13 +139,18 @@ def run(photo, keep_items, output_dir, method="gemini", planting_band=0, manual_
         model=None, dry_run=False) -> dict:
     img = ImageOps.exif_transpose(Image.open(photo)).convert("RGB")
     items = [s.strip() for s in keep_items.split(",") if s.strip()]
-    model = model or os.environ.get("GEMINI_SEG_MODEL") or "gemini-3.8-flash"
+    model = model or os.environ.get("GEMINI_SEG_MODEL") or "gemini-3.5-flash"
     if dry_run:
         return {"photo": str(photo), "size": list(img.size), "method": method, "items": items, "dry_run": True}
 
     keep = np.zeros((img.height, img.width), np.uint8)
     segments = []
-    if method == "gemini":
+    if method == "gemini-poly":
+        if not items:
+            raise ValueError("--keep is required for method=gemini-poly")
+        segments = call_gemini(img, items, model, POLY_PROMPT)
+        keep = paint_polygons(segments, img.size)
+    elif method == "gemini":
         if not items:
             raise ValueError("--keep is required for method=gemini")
         segments = call_gemini(img, items, model)
@@ -146,7 +174,7 @@ def run(photo, keep_items, output_dir, method="gemini", planting_band=0, manual_
     Image.fromarray(keep).save(out / f"{stem}_keep.png")
     overlay(img, keep).save(out / f"{stem}_overlay.jpg", quality=90)
     (out / f"{stem}_segments.json").write_text(json.dumps(
-        [{k: v for k, v in s.items() if k != "mask"} for s in segments], indent=2, ensure_ascii=False))
+        [{k: v for k, v in s.items() if k not in ("mask",)} for s in segments], indent=2, ensure_ascii=False))
     return {"mask": str(out / f"{stem}_keep.png"), "overlay": str(out / f"{stem}_overlay.jpg"),
             "keep_fraction": round(float((keep > 0).mean()), 3),
             "segments": [s.get("label") for s in segments]}

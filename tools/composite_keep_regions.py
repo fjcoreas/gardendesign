@@ -6,7 +6,7 @@ Inputs:   Original normalized photo, render, KEEP mask (255 = keep original)
 Outputs:  <output>/<original-stem>__<render-stem>.png and an entry appended to <output>/pairs.json
 Env vars: none
 Cost:     free
-Status:   Implemented.
+Status:   Implemented. Optional step since 2026-11-16 (see workflow learnings): use --measure-only first.
 """
 import argparse, json, sys
 from pathlib import Path
@@ -26,6 +26,8 @@ def parse_args():
     p.add_argument("--color-match", action="store_true",
                    help="Match the render's colour to the original in LAB, measured inside the KEEP area")
     p.add_argument("--label", default="", help="Caption for the before/after page")
+    p.add_argument("--measure-only", action="store_true",
+                   help="Only measure camera drift (scale/rotation/shift) between original and render; no output")
     p.add_argument("--dry-run", action="store_true", help="No writes")
     return p.parse_args()
 
@@ -55,6 +57,34 @@ def color_match_lab(render: Image.Image, original: Image.Image, keep: np.ndarray
     return Image.fromarray(np.clip(rgb * 255.0, 0, 255).astype(np.uint8), "RGB")
 
 
+def estimate_alignment(original: Image.Image, render: Image.Image, keep: np.ndarray):
+    """Similarity transform (scale + rotation + shift) mapping ORIGINAL -> RENDER, fitted on keep pixels.
+
+    Returns (2x3 matrix, info dict) or (None, info) if there are too few reliable matches."""
+    import cv2
+    go = cv2.cvtColor(np.asarray(original), cv2.COLOR_RGB2GRAY)
+    gr = cv2.cvtColor(np.asarray(render), cv2.COLOR_RGB2GRAY)
+    m = ((keep > 0.5) * 255).astype(np.uint8)
+    sift = cv2.SIFT_create(5000)
+    ko, do = sift.detectAndCompute(go, m)
+    kr, dr = sift.detectAndCompute(gr, None)
+    if do is None or dr is None or len(ko) < 10 or len(kr) < 10:
+        return None, {"matches": 0}
+    good = [a for a, b in cv2.BFMatcher().knnMatch(do, dr, k=2) if a.distance < 0.75 * b.distance]
+    if len(good) < 12:
+        return None, {"matches": len(good)}
+    src = np.float32([ko[g.queryIdx].pt for g in good])
+    dst = np.float32([kr[g.trainIdx].pt for g in good])
+    A, inl = cv2.estimateAffinePartial2D(src, dst, method=cv2.RANSAC, ransacReprojThreshold=3.0)
+    n = int(inl.sum()) if inl is not None else 0
+    if A is None or n < 10:
+        return None, {"matches": len(good), "inliers": n}
+    scale = float(np.hypot(A[0, 0], A[1, 0]))
+    rot = float(np.degrees(np.arctan2(A[1, 0], A[0, 0])))
+    return A, {"matches": len(good), "inliers": n, "scale": round(scale, 4), "rotation_deg": round(rot, 2),
+               "shift_px": [round(float(A[0, 2]), 1), round(float(A[1, 2]), 1)]}
+
+
 def build_alpha(mask_path, size, erode: int, feather: int) -> np.ndarray:
     m = Image.open(mask_path).convert("L").resize(size, Image.NEAREST)
     if erode > 0:
@@ -64,12 +94,22 @@ def build_alpha(mask_path, size, erode: int, feather: int) -> np.ndarray:
     return np.asarray(m, dtype=np.float32)[..., None] / 255.0
 
 
-def run(original, render, mask, output_dir, feather=9, erode=2, color_match=False, label="", dry_run=False) -> dict:
+def run(original, render, mask, output_dir, feather=9, erode=2, color_match=False, label="", dry_run=False,
+        measure_only=False) -> dict:
     orig = load_rgb(original)
     rend = load_rgb(render)
     resized = rend.size != orig.size
     if resized:
         rend = rend.resize(orig.size, Image.LANCZOS)
+    if measure_only:
+        keep = np.asarray(Image.open(mask).convert("L").resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
+        A, info = estimate_alignment(orig, rend, keep)
+        drift = None if A is None else round(max(abs(info["scale"] - 1) * 100,
+                                                 100 * float(np.hypot(*info["shift_px"])) / max(orig.size)), 1)
+        return {"alignment": info, "drift_pct": drift,
+                "composite_advised": drift is not None and drift <= 2.0,
+                "note": "drift_pct = max(scale change, shift as % of longest side). Above ~2% compositing "
+                        "creates double edges; deliver the render after visual QA instead."}
 
     hard_keep = np.asarray(Image.open(mask).convert("L").resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
     if color_match:
@@ -111,7 +151,7 @@ def main():
     a = parse_args()
     try:
         print(json.dumps({"status": "ok", **run(a.original, a.render, a.mask, a.output, a.feather, a.erode,
-                                                 a.color_match, a.label, a.dry_run)}, indent=2, ensure_ascii=False))
+                                                 a.color_match, a.label, a.dry_run, a.measure_only)}, indent=2, ensure_ascii=False))
         return 0
     except Exception as e:
         print(json.dumps({"status": "error", "error": type(e).__name__, "message": str(e)}), file=sys.stderr)

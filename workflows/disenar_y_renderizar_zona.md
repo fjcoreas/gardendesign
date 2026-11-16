@@ -22,8 +22,8 @@ Para **una zona**:
 ## Pipeline
 ```
 [Brief] → (Agente: 2–3 conceptos) → [Humano: elige] → (Agente: ficha de diseño canónica)
-→ make_keep_mask.py → [Humano: aprueba la máscara, solo la 1ª vez por foto] → (Agente: prompt por foto)
-→ render_redesign.py → composite_keep_regions.py → (Agente: QA visual) → make_before_after.py → [Humano: aprueba]
+→ (Agente: prompt por foto, plantilla v2) → render_redesign.py → make_keep_mask.py + composite --measure-only
+→ [si corrimiento ≤2%: composite_keep_regions.py] → (Agente: QA visual) → make_before_after.py → [Humano: aprueba]
 ```
 
 ## Pasos
@@ -34,7 +34,7 @@ Para **una zona**:
 3. **Ficha de diseño canónica.** Agente.
    - Escribe `outputs/conceptos/<zona>_ficha.md`: un párrafo fijo que describe el diseño elegido (plantas, materiales, colores, época del año).
    - **Se reutiliza palabra por palabra** en cada prompt de esa zona, para que las fotos sean consistentes entre sí.
-4. **Máscara de lo que no se toca.** Tool: `tools/make_keep_mask.py`.
+4. **Máscara de lo que no se toca** (para medir el corrimiento y, si es bajo, componer). Tool: `tools/make_keep_mask.py`, método `gemini-poly` (por defecto).
    - Corre: `python tools/make_keep_mask.py --photo .tmp/fotos/<foto> --keep "house,wall,avocado tree,sky,terrace floor" --output .tmp/masks/`.
    - Produce: `<foto>_keep.png` (blanco = se conserva) y `<foto>_overlay.jpg` para revisar.
    - Deja una **franja de plantación** al pie de muros y casa, para que las plantas nuevas puedan tapar la base.
@@ -47,7 +47,10 @@ Para **una zona**:
    - Corre: `python tools/render_redesign.py --photo .tmp/fotos/<foto> --prompt .tmp/prompts/<foto>.txt --output .tmp/renders/ [--ref <render_aprobado>]`.
    - Primero un render. Si convence, sigue con las demás fotos y pasa el primer render aprobado como `--ref`.
    - Antes de más de ~10 renders seguidos, pregunta.
-7. **Composite.** Tool: `tools/composite_keep_regions.py`.
+7. **Composite (opcional).** Tool: `tools/composite_keep_regions.py`.
+   - Primero mide: `python tools/composite_keep_regions.py --original … --render … --mask … --output x --measure-only`.
+   - Si `drift_pct` es **≤2%** y el diseño no pone nada sobre los muros fijos, compón.
+   - Si no, **no compongas**: entrega el render tras el QA visual y anótalo en la leyenda de la comparativa. Componer con corrimiento genera dobles bordes y hace reaparecer cosas viejas.
    - Corre: `python tools/composite_keep_regions.py --original .tmp/fotos/<foto> --render .tmp/renders/<render> --mask .tmp/masks/<foto>_keep.png --output outputs/renders/<zona>/`.
 8. **QA visual.** Agente. Compara el original con el resultado:
    - ¿Cambió algo fijo?
@@ -76,13 +79,13 @@ Para **una zona**:
 | Inconsistencia entre fotos | Misma ficha canónica + primer render aprobado como referencia (máx. 1–3 referencias) |
 
 ## Pendientes
-- `OPEN:` método de máscara. Opciones:
+- RESUELTO 2026-11-16: método de máscara `gemini-poly` (polígonos con `gemini-3.5-flash`). El formato de máscara nativo devolvió datos inválidos. Opciones originales:
   - (a) SAM 3 local con `transformers` (CPU, lento pero gratis; requiere descargar el modelo de huggingface.co);
   - (b) segmentación con Gemini, con la misma key (por verificar);
   - (c) máscara dibujada a mano.
 
   Probar (a) o (b) y caer en (c).
-- `OPEN:` ID exacto del modelo de imagen vigente; confirmarlo en AI Studio y ponerlo en `GEMINI_IMAGE_MODEL`.
+- RESUELTO: `gemini-nano-banana-2.1`.
 
 ## Registro de aprendizajes
 - 2026-11-16: Gemini acepta solo estas proporciones: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9 y 21:9. Las panorámicas (p. ej. la 01, 3.3:1) quedan 29% fuera y el render saldría estirado: recortarlas a 21:9 o 16:9 antes de renderizar. La foto 06 es exactamente 3:4, ideal para la primera prueba.
@@ -93,4 +96,9 @@ Para **una zona**:
   - **Composite:** con un corrimiento de cámara de ~9%, pegar los píxeles originales produce dobles bordes (celosía y luces duplicadas, una flor flotante), así que en esa vista se entregó el render sin composición. Antes de componer, medir el corrimiento; si pasa de ~2%, no componer o alinear primero. La alineación con transformación de similitud deja bordes vacíos abajo, así que falta resolverlo.
   - El ajuste de color con LAB de PIL saturaba los colores (los canales a/b se desbordan); se corrigió usando LAB de OpenCV.
   - Costo de la prueba: 2 renders a 2K más 3 llamadas de segmentación, unos $0.10–0.15.
+- 2026-11-16 (refinamiento):
+  - Las máscaras con polígonos (`gemini-poly`, ~10 s) siguen bien los muros, los árboles y la malla; quedan aproximadas en los bordes.
+  - El corrimiento medido fue 9.3% en el v2 de 2.1, y Pro no lo mejoró. La alineación ECC tampoco sirve, porque el modelo redibuja los elementos fijos con deformaciones no rígidas, y además el diseño coloca cosas sobre los muros.
+  - **Conclusión: la fidelidad viene del prompt v2, la medición y el QA visual; el composite pasa a ser opcional.**
+  - `ingest_photos.py` ahora recorta cada foto a la proporción soportada más cercana. Renderiza siempre desde `.tmp/fotos/`.
 

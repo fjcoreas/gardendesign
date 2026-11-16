@@ -13,3 +13,7 @@
 | 2026-11-14 | Mask method left OPEN: try SAM 3 (local) or Gemini segmentation, fall back to a hand-painted mask. | No method tested yet. |
 | 2026-11-16 | Gemini key stored as an environment Network secret (host generativelanguage.googleapis.com, header x-goog-api-key). Tools send a placeholder key; the proxy injects the real one. | Key never touches files or code. `Authorization` header does not work for this API. |
 | 2026-11-16 | Model: `gemini-nano-banana-2.1`; in-Google fallback `gemini-3-pro-image`. | Both confirmed available via the API's model list. |
+| 2026-11-16 | Compositing is optional, used only when measured camera drift is ≤2%. Fidelity comes from the v2 prompt (framing lock first), drift measurement and visual QA. | Gemini shifts the camera ~9% and redraws fixed elements non-rigidly; the design attaches items to fixed walls. Compositing produced double edges and resurrected old objects. |
+| 2026-11-16 | Stay on Nano Banana 2.1. | Pro gave no fidelity gain at 2-4x the cost. |
+| 2026-11-16 | Masks via Gemini polygons (`gemini-3.5-flash`). | Native mask output was invalid; boxes too coarse. |
+| 2026-11-16 | Before/after pages embed images and use a range slider + buttons. | User couldn't compare on the phone. |
