@@ -2,41 +2,106 @@
 make_before_after.py
 Purpose:  Build a self-contained HTML page with before/after sliders for a zone.
 Used by:  workflows/disenar_y_renderizar_zona.md (step 9), workflows/armar_plan_final.md
-Inputs:   pairs.json ([{before, after, label}])
-Outputs:  comparar.html next to pairs.json (images referenced relatively)
-Env vars: none (see .env.example)
+Inputs:   pairs.json ([{before, after, label}]), image paths relative to pairs.json
+Outputs:  HTML page (images referenced relative to the HTML file)
+Env vars: none
 Cost:     free
-Status:   STUB - logic not implemented yet.
+Status:   Implemented.
 """
-import argparse, json, sys
+import argparse, html, json, os, sys
 from pathlib import Path
-from dotenv import load_dotenv
-
-
-load_dotenv()
-TMP_DIR = Path(".tmp"); TMP_DIR.mkdir(exist_ok=True)
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Build a self-contained HTML page with before/after sliders for a zone.")
+    p = argparse.ArgumentParser(description="Build a before/after slider page.")
     p.add_argument("--pairs", required=True, help="Path to pairs.json")
     p.add_argument("--output", required=True, help="HTML output path")
     p.add_argument("--title", default="Antes y después")
-    p.add_argument("--dry-run", action="store_true", help="No writes, no paid API calls")
+    p.add_argument("--dry-run", action="store_true", help="No writes")
     return p.parse_args()
 
 
-def run(pairs_path, output_path, title='Antes y después', dry_run=False) -> dict:
-    # TODO: read pairs -> render HTML with one CSS/JS slider per pair (no external deps), Spanish labels.
-    raise NotImplementedError("Stub. See workflows/disenar_y_renderizar_zona.md for the spec.")
+PAGE = """<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<style>
+  body {{ margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:#f6f3ec; color:#2f3a2f; }}
+  header {{ padding:24px 20px 8px; max-width:1200px; margin:auto; }}
+  h1 {{ font-size:1.6rem; margin:0 0 4px; }}
+  p.hint {{ margin:0; color:#5d6b5d; }}
+  figure {{ max-width:1200px; margin:20px auto 36px; padding:0 20px; }}
+  .ba {{ position:relative; overflow:hidden; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.15); user-select:none; touch-action:none; }}
+  .ba img {{ display:block; width:100%; height:auto; }}
+  .ba .after {{ position:absolute; inset:0; clip-path: inset(0 0 0 50%); }}
+  .ba .after img {{ height:100%; object-fit:cover; }}
+  .ba .bar {{ position:absolute; top:0; bottom:0; left:50%; width:3px; background:#fff; box-shadow:0 0 4px rgba(0,0,0,.5); pointer-events:none; }}
+  .ba .knob {{ position:absolute; top:50%; left:50%; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:50%;
+               background:#fff; box-shadow:0 1px 6px rgba(0,0,0,.4); pointer-events:none; display:flex; align-items:center;
+               justify-content:center; font-size:15px; color:#2f3a2f; }}
+  .tag {{ position:absolute; top:10px; padding:3px 9px; border-radius:4px; background:rgba(0,0,0,.55); color:#fff; font-size:.85rem; pointer-events:none; }}
+  .tag.l {{ left:10px; }} .tag.r {{ right:10px; }}
+  figcaption {{ margin-top:8px; font-size:1rem; }}
+</style></head><body>
+<header><h1>{title}</h1><p class="hint">Desliza la línea blanca para comparar el jardín actual (izquierda) con la propuesta (derecha).</p></header>
+{figures}
+<script>
+document.querySelectorAll('.ba').forEach(function (el) {{
+  var after = el.querySelector('.after'), bar = el.querySelector('.bar'), knob = el.querySelector('.knob'), dragging = false;
+  function set(x) {{
+    var r = el.getBoundingClientRect(), p = Math.min(100, Math.max(0, (x - r.left) / r.width * 100));
+    after.style.clipPath = 'inset(0 0 0 ' + p + '%)'; bar.style.left = p + '%'; knob.style.left = p + '%';
+  }}
+  el.addEventListener('pointerdown', function (e) {{ dragging = true; el.setPointerCapture(e.pointerId); set(e.clientX); }});
+  el.addEventListener('pointermove', function (e) {{ if (dragging) set(e.clientX); }});
+  el.addEventListener('pointerup', function () {{ dragging = false; }});
+}});
+</script>
+</body></html>
+"""
+
+FIGURE = """<figure>
+  <div class="ba">
+    <img src="{before}" alt="Antes">
+    <div class="after"><img src="{after}" alt="Después"></div>
+    <div class="bar"></div><div class="knob">&#8596;</div>
+    <span class="tag l">Antes</span><span class="tag r">Después</span>
+  </div>
+  <figcaption>{label}</figcaption>
+</figure>"""
+
+
+def run(pairs_path, output_path, title="Antes y después", dry_run=False) -> dict:
+    pairs_file = Path(pairs_path)
+    pairs = json.loads(pairs_file.read_text())
+    if not pairs:
+        raise ValueError(f"{pairs_path} has no pairs")
+    out = Path(output_path)
+    figures = []
+    for p in pairs:
+        paths = {}
+        for k in ("before", "after"):
+            img = (pairs_file.parent / p[k]).resolve()
+            if not img.exists():
+                raise FileNotFoundError(f"Missing image: {img}")
+            paths[k] = html.escape(os.path.relpath(img, out.parent.resolve()))
+        figures.append(FIGURE.format(label=html.escape(p.get("label", "")), **paths))
+    page = PAGE.format(title=html.escape(title), figures="\n".join(figures))
+    if dry_run:
+        return {"output": str(out), "pairs": len(pairs), "dry_run": True}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(page, encoding="utf-8")
+    return {"output": str(out), "pairs": len(pairs)}
 
 
 def main():
     a = parse_args()
     try:
-        print(json.dumps({"status": "ok", **run(a.pairs, a.output, a.title, a.dry_run)}, indent=2, ensure_ascii=False)); return 0
+        print(json.dumps({"status": "ok", **run(a.pairs, a.output, a.title, a.dry_run)}, indent=2, ensure_ascii=False))
+        return 0
     except Exception as e:
-        print(json.dumps({"status": "error", "error": type(e).__name__, "message": str(e)}), file=sys.stderr); return 1
+        print(json.dumps({"status": "error", "error": type(e).__name__, "message": str(e)}), file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
