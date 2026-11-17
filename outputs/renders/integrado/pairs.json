@@ -1,17 +1,17 @@
 [
   {
     "before": "02_terraza_desde_asadores_panoramica__original.jpg",
-    "after": "02_terraza_desde_asadores_panoramica__02_integrado_v2.png",
-    "label": "Vista integrada desde los asadores (foto 02): terraza concepto C + césped concepto A. La casa y el alero son los píxeles originales. En la obra real, el baúl verde va pegado al muro junto a los asadores."
+    "after": "02_terraza_desde_asadores_panoramica__02_integrado_juegos.png",
+    "label": "Desde los asadores (foto 02): terraza C + césped A con la zona de juegos de los nietos al fondo del césped. La casa y el alero son los píxeles originales."
+  },
+  {
+    "before": "05_rincon_aguacate_panoramica__original.jpg",
+    "after": "05_rincon_aguacate_panoramica__05_aguacate_juegos.png",
+    "label": "Rincón del aguacate (foto 05): saloncito de orquídeas (C) + césped (A) con la zona de juegos. En la obra real el saloncito va sobre el césped, a la izquierda del árbol y fuera de la copa."
   },
   {
     "before": "../cesped/06_original.jpg",
     "after": "../cesped/06_concepto_A_v2.jpg",
-    "label": "Césped visto hacia el muro de block (foto 06): concepto A."
-  },
-  {
-    "before": "../aguacate/05_rincon_aguacate_panoramica__original.jpg",
-    "after": "../aguacate/05_rincon_aguacate_panoramica__05_aguacate_C_v1.png",
-    "label": "Rincón del aguacate (foto 05): saloncito de orquídeas (C) con el césped (A)."
+    "label": "Césped visto hacia el muro de block (foto 06): concepto A. La zona de juegos queda detrás de la cámara, en el extremo del aguacate."
   }
 ]

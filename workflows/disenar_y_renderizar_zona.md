@@ -113,3 +113,8 @@ Para **una zona**:
   - Corrimiento de 0.5%. El render **recortó parte de la copa del aguacate** y quitó la vegetación sobre el muro izquierdo. Se compusieron de vuelta la copa, el techo y el cielo de la derecha.
   - Una primera máscara que incluía "trees and hedge beyond the fence" y "mountain" trajo **fantasmas**: partes altas de plantas viejas del arriate que asomaban sobre el muro quedaron flotando. **Regla: compón solo regiones que el diseño no toca y que no se mezclan con plantas del área editada** (copa, techo, cielo abierto).
   - Pendiente de consistencia: el seto del arriate salió naranja (no limonaria), y apareció una franja de concreto cruzando el césped hacia el saloncito.
+- 2026-11-17 (zona de juegos en el césped):
+  - Foto 02: en v1 el baúl y el carrito quedaron contra la casa, tapando el paso. v2 los ubicó bien con "right behind them, against the grey block wall… nothing stands near the house wall" (corrimiento 0.1%).
+  - Foto 05: en v1 el juego quedó bajo la copa, y volvieron la franja de concreto y el seto naranja. v2 corrigió la franja y el seto ("one continuous, uninterrupted area of grass… no path, strip or paving crosses it"; "plain dark green"), pero el saloncito quedó bajo la copa (corrimiento 2.0%). v3, con posiciones exactas, acertó la distribución pero movió la cámara 6.2% y **cambió la casita del alero**, así que se descartó por la regla de elementos fijos.
+  - **Lección:** pedir posiciones muy precisas en una foto panorámica muy deformada tiende a que el modelo "reencuadre" la escena. Cuando eso pase, entrega la mejor versión fiel y anota la distribución correcta en el plan.
+  - Costo de la sesión: 5 renders, unos $0.25.

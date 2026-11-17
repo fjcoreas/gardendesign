@@ -95,3 +95,20 @@
 - Las medidas reales del césped y del arriate.
 - Si tu mamá prefiere orilla recta (A, C) o curva (B).
 - Cuántos bonsáis y arbolitos en bolsa hay, para dimensionar la estantería.
+
+---
+
+## Añadido el 2026-11-17: zona de juegos para los nietos (pedido del usuario)
+- **Ubicación:** en el **extremo del césped junto al rincón del aguacate**, del lado de la terraza, **fuera de la copa del árbol** (por los aguacates que caen) y **lejos de los asadores**, que están en el otro extremo. Se ve desde la sala de la terraza y desde el saloncito. El centro del césped queda libre para correr y jugar pelota.
+- **Juego compacto de madera** (para niños de 2 a 6 años):
+  - torre baja de ~1 m con resbaladero corto de plástico;
+  - **arenero bajo la plataforma, con tapa:** evita que lo usen los gatos y que junte agua de lluvia (zancudo del dengue);
+  - viga con **2 columpios**, uno con **silla de bebé** para el de 2 años.
+- **Superficie:** **tapetes de caucho tipo grama** bajo todo el juego, con ~1.8 m de margen alrededor de los columpios y del resbaladero.
+- **Seguridad:**
+  - el juego va anclado al suelo;
+  - el resbaladero no debe mirar al sol de la tarde (en el trópico se calienta);
+  - hay que revisar tornillos y cuerdas cada mes;
+  - los columpios no deben quedar en el paso hacia el saloncito;
+  - no deben quedar rosales a menos de ~1.5 m del juego, y el seto de limonaria sirve de barrera.
+- **Espacio estimado:** ~4 × 4 m incluyendo los márgenes de seguridad. **Verificar con las medidas reales** del césped.
