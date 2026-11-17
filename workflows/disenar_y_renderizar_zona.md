@@ -118,3 +118,11 @@ Para **una zona**:
   - Foto 05: en v1 el juego quedó bajo la copa, y volvieron la franja de concreto y el seto naranja. v2 corrigió la franja y el seto ("one continuous, uninterrupted area of grass… no path, strip or paving crosses it"; "plain dark green"), pero el saloncito quedó bajo la copa (corrimiento 2.0%). v3, con posiciones exactas, acertó la distribución pero movió la cámara 6.2% y **cambió la casita del alero**, así que se descartó por la regla de elementos fijos.
   - **Lección:** pedir posiciones muy precisas en una foto panorámica muy deformada tiende a que el modelo "reencuadre" la escena. Cuando eso pase, entrega la mejor versión fiel y anota la distribución correcta en el plan.
   - Costo de la sesión: 5 renders, unos $0.25.
+- 2026-11-17 (corrección del usuario sobre la zona de juegos):
+  - **Error de diseño:** puse el juego en el rincón del aguacate, desplazando el saloncito con la mesa blanca que el usuario ya había aprobado. **Regla: un elemento nuevo nunca desplaza algo aprobado. Si no cabe, pregunta dónde va.**
+  - **Nuevo método para agregar algo a una imagen aprobada:**
+    1. Usa la imagen aprobada como `--photo`, con un prompt corto: "Add one thing… keep everything else exactly identical" (es un único ajuste pequeño, permitido por la regla de 1–3 ajustes).
+    2. Corre `composite_keep_regions.py --mask auto`, que detecta solo la zona cambiada comparando las imágenes suavizadas y pega la imagen aprobada en todo lo demás.
+
+    En la foto 06 el corrimiento fue de ~0% y el 86% de la imagen quedó idéntico a lo aprobado.
+  - **Limitación:** en la foto 02 el modelo puso el juego en otro lugar y oscureció toda la imagen; la máscara automática no encontró ningún cambio aislado (keep_fraction 1.0), así que se descartó. Revisa siempre `keep_fraction`: con 1.0 no se agregó nada aislado; con menos de ~0.6 se cambió demasiado.

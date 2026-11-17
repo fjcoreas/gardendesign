@@ -19,7 +19,10 @@ def parse_args():
     p = argparse.ArgumentParser(description="Paste original pixels back over the KEEP mask.")
     p.add_argument("--original", required=True)
     p.add_argument("--render", required=True)
-    p.add_argument("--mask", required=True, help="KEEP mask, 255 = keep original")
+    p.add_argument("--mask", required=True,
+                   help="KEEP mask (255 = keep original), or 'auto' to keep everything except the region where the render "
+                        "differs from the original (for small additions to an already-approved image)")
+    p.add_argument("--diff-threshold", type=int, default=30, help="With --mask auto: per-pixel difference counted as a change")
     p.add_argument("--output", required=True, help="Output folder, e.g. outputs/renders/cesped")
     p.add_argument("--feather", type=int, default=9, help="Gaussian blur radius for the seam (5-15 px)")
     p.add_argument("--erode", type=int, default=2, help="Shrink keep mask before feathering (px)")
@@ -85,8 +88,33 @@ def estimate_alignment(original: Image.Image, render: Image.Image, keep: np.ndar
                "shift_px": [round(float(A[0, 2]), 1), round(float(A[1, 2]), 1)]}
 
 
+def auto_keep_mask(original: Image.Image, render: Image.Image, threshold: int = 30, grow: int = 25) -> Image.Image:
+    """KEEP mask = everything except the area the model actually changed.
+
+    Meant for a small addition to an approved image (original = approved image, render = same image + addition):
+    pixel differences above `threshold` are grouped, small noise blobs dropped, and the changed area grown by `grow` px
+    so its shadow and edges come from the render."""
+    import cv2
+    # Compare blurred images: the model re-draws fine textures (grass, leaves) everywhere, which a per-pixel diff
+    # reads as change; blurring keeps only real shape/colour changes such as a new object.
+    o = cv2.GaussianBlur(np.asarray(original, np.float32), (0, 0), 10)
+    r = cv2.GaussianBlur(np.asarray(render, np.float32), (0, 0), 10)
+    d = np.abs(o - r).max(axis=2)
+    changed = (d > threshold).astype(np.uint8)
+    changed = cv2.morphologyEx(changed, cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8))
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(changed)
+    min_area = 0.002 * changed.size
+    keep_changed = np.zeros_like(changed)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] >= min_area:
+            keep_changed[lab == i] = 1
+    keep_changed = cv2.dilate(keep_changed, np.ones((grow * 2 + 1, grow * 2 + 1), np.uint8))
+    return Image.fromarray(((1 - keep_changed) * 255).astype(np.uint8))
+
+
 def build_alpha(mask_path, size, erode: int, feather: int) -> np.ndarray:
-    m = Image.open(mask_path).convert("L").resize(size, Image.NEAREST)
+    m = mask_path if isinstance(mask_path, Image.Image) else Image.open(mask_path)
+    m = m.convert("L").resize(size, Image.NEAREST)
     if erode > 0:
         m = m.filter(ImageFilter.MinFilter(erode * 2 + 1))
     if feather > 0:
@@ -95,14 +123,17 @@ def build_alpha(mask_path, size, erode: int, feather: int) -> np.ndarray:
 
 
 def run(original, render, mask, output_dir, feather=9, erode=2, color_match=False, label="", dry_run=False,
-        measure_only=False) -> dict:
+        measure_only=False, diff_threshold=30) -> dict:
     orig = load_rgb(original)
     rend = load_rgb(render)
     resized = rend.size != orig.size
     if resized:
         rend = rend.resize(orig.size, Image.LANCZOS)
+    if mask == "auto":
+        mask = auto_keep_mask(orig, rend, diff_threshold)
     if measure_only:
-        keep = np.asarray(Image.open(mask).convert("L").resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
+        keep = np.asarray((mask if isinstance(mask, Image.Image) else Image.open(mask)).convert("L")
+                          .resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
         A, info = estimate_alignment(orig, rend, keep)
         drift = None if A is None else round(max(abs(info["scale"] - 1) * 100,
                                                  100 * float(np.hypot(*info["shift_px"])) / max(orig.size)), 1)
@@ -111,7 +142,8 @@ def run(original, render, mask, output_dir, feather=9, erode=2, color_match=Fals
                 "note": "drift_pct = max(scale change, shift as % of longest side). Above ~2% compositing "
                         "creates double edges; deliver the render after visual QA instead."}
 
-    hard_keep = np.asarray(Image.open(mask).convert("L").resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
+    mask_img = mask if isinstance(mask, Image.Image) else Image.open(mask)
+    hard_keep = np.asarray(mask_img.convert("L").resize(orig.size, Image.NEAREST), dtype=np.float32) / 255.0
     if color_match:
         rend = color_match_lab(rend, orig, hard_keep)
 
@@ -151,7 +183,8 @@ def main():
     a = parse_args()
     try:
         print(json.dumps({"status": "ok", **run(a.original, a.render, a.mask, a.output, a.feather, a.erode,
-                                                 a.color_match, a.label, a.dry_run, a.measure_only)}, indent=2, ensure_ascii=False))
+                                                 a.color_match, a.label, a.dry_run, a.measure_only,
+                                                 a.diff_threshold)}, indent=2, ensure_ascii=False))
         return 0
     except Exception as e:
         print(json.dumps({"status": "error", "error": type(e).__name__, "message": str(e)}), file=sys.stderr)

@@ -3,5 +3,10 @@
     "before": "06_original.jpg",
     "after": "06_concepto_A_v2.jpg",
     "label": "Concepto A «Marco ordenado»: césped visto hacia el muro de block (foto 06). Render de Gemini sin composición: el modelo movió ligeramente la cámara."
+  },
+  {
+    "before": "06_original.jpg",
+    "after": "06_concepto_A_v2__06_A_mas_juegos.png",
+    "label": "Concepto A + zona de juegos en la parte que es solo césped (foto 06). Todo lo demás es la imagen ya aprobada, sin cambios."
   }
 ]

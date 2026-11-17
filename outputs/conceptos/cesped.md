@@ -99,7 +99,7 @@
 ---
 
 ## Añadido el 2026-11-17: zona de juegos para los nietos (pedido del usuario)
-- **Ubicación:** en el **extremo del césped junto al rincón del aguacate**, del lado de la terraza, **fuera de la copa del árbol** (por los aguacates que caen) y **lejos de los asadores**, que están en el otro extremo. Se ve desde la sala de la terraza y desde el saloncito. El centro del césped queda libre para correr y jugar pelota.
+- **Ubicación (corregida el 2026-11-17 por el usuario):** en la **parte que es solo césped**: la mitad del césped junto al muro de ladrillo, entre el centro y la banca de bonsáis, con una franja de grama libre antes del seto de los rosales. **No va en el rincón del aguacate**: ahí sigue el saloncito con la mesa blanca. El seto de limonaria entre la terraza y el césped lo separa de los asadores. El resto del césped queda libre para correr y jugar pelota.
 - **Juego compacto de madera** (para niños de 2 a 6 años):
   - torre baja de ~1 m con resbaladero corto de plástico;
   - **arenero bajo la plataforma, con tapa:** evita que lo usen los gatos y que junte agua de lluvia (zancudo del dengue);
