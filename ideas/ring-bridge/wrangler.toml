@@ -1,0 +1,12 @@
+name = "ring-bridge"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Your scheduled task id (starts with trig_). Not secret.
+ROUTINE_ID = "trig_REPLACE_ME"
+
+# Secrets: set these with `npx wrangler secret put <NAME>`, never here.
+#   ROUTINE_TOKEN  API-trigger token of the scheduled task
+#   APP_PASSCODE   passcode you type once on your phone
+#   RING_SECRET    optional; long random string for the ring webhook URL
